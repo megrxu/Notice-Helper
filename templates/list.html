@@ -1,0 +1,82 @@
+<!doctype html>
+<title>校园通知</title>
+<link rel=stylesheet type=text/css href="{{ '.' + url_for('static', filename='style.css') }}">
+
+<body class="markdown-body">
+    <h1>
+        校园通知
+    </h1>
+    查看这个网站绑定的 Telegram 机器人 
+    <a href="https://t.me/pi41971_bot" target="_blank">通知机器 | Bot</a>。上次更新时间是 {{ update}}。
+
+    <br>
+    <br>
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <a href="./">全部</a>
+                </td>
+                {% for url in urls %}
+                <td>
+                    <a href="{{ './' + url['name']}}">{{ url['name'] }}</a>
+                </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+    {% if feed == "" %}
+    <h2>全部</h2>
+    {% else %}
+    <h2>{{ feed }}</h2>
+    {% endif %} {% if articles %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>来源</th>
+                <th>标题</th>
+                <th>更新时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+            <tr>
+                <td>
+                    {{ article.feed }}
+                </td>
+                <td>
+                    <a href="{{article.link}}" target="_blank">{{ article.title }}</a>
+                </td>
+                <td>
+                    {{ article.published }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <h1>请求不合法~</h1>
+    {% endif %}
+
+    <h2>Credits</h2>
+
+    <ul>
+        <li>
+            <a href="http://flask.pocoo.org/" target="_blank">Flask</a>
+        </li>
+        <li>
+            <a href="https://github.com/sindresorhus/github-markdown-css" target="_blank">Github-Markdown-CSS</a>
+        </li>
+        <li>
+            <a href="https://python-telegram-bot.org/" target="_blank">python-telegram-bot</a>
+        </li>
+        <li>
+            <a href="https://www.crummy.com/software/BeautifulSoup/bs4/doc/" target="_blank">bs4</a>
+        </li>
+        </li>
+    </ul>
+
+
+</body>
