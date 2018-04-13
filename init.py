@@ -15,7 +15,7 @@ tasks = [{
     'func': refresh_task,
     'interval': 3600,
     'first': datetime.now().replace(hour=datetime.now().hour+1, minute=0, second=0, microsecond=0)
-    # 'first': datetime(2019, 1, 1, 1)
+    # 'first': datetime.now()
 }]
 
 MyBot = Bot(token, commands=commands, tasks=tasks)

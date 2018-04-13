@@ -14,6 +14,7 @@ def parse_rss(url, feed):
 def parse_html(url):
     try:
         resp = requests.get(url)
+        resp.encoding = 'gb2312'
     except:
         return None
     # http_encoding = resp.encoding if 'charset' in resp.headers.get(
@@ -21,7 +22,7 @@ def parse_html(url):
     # html_encoding = EncodingDetector.find_declared_encoding(
     #     resp.content, is_html=True)
     # encoding = html_encoding or http_encoding
-    return BeautifulSoup(resp.content, 'html.parser')
+    return BeautifulSoup(resp.text, 'html.parser')
 
 
 def parse_college(url, feed):
