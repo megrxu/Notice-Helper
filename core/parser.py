@@ -17,11 +17,11 @@ def parse_html(url):
         resp.encoding = 'gb2312'
     except:
         return None
-    # http_encoding = resp.encoding if 'charset' in resp.headers.get(
-    #     'content-type', '').lower() else None
-    # html_encoding = EncodingDetector.find_declared_encoding(
-    #     resp.content, is_html=True)
-    # encoding = html_encoding or http_encoding
+    http_encoding = resp.encoding if 'charset' in resp.headers.get(
+        'content-type', '').lower() else None
+    html_encoding = EncodingDetector.find_declared_encoding(
+        resp.content, is_html=True)
+    encoding = html_encoding or http_encoding
     return BeautifulSoup(resp.text, 'html.parser')
 
 
@@ -32,10 +32,18 @@ def parse_college(url, feed):
     articles = []
     for ul in soup.find_all('ul', attrs={'class': 'cg-news-list'}):
         for li in ul.find_all('li'):
-            date = parse_date(
-                li.find('span', attrs={'class': 'art-date'}).text)
+            try:
+                text = li.find('span', attrs={'class': 'art-date'}).text
+            except:
+                continue 
+            date = parse_date(text)
+            try:
+                title = li.a['title']
+                true_url = url + li.a['href']
+            except:
+                continue
             articles.append(
-                Article(li.a['title'], feed, date, url + li.a['href']))
+                Article(title, feed, date, url + true_url))
     return articles
 
 
@@ -54,22 +62,6 @@ def parse_cspo(url, feed):
             title = item.find_all('a')[-1].text
             link = url + item.find_all('a')[-1]['href']
     return articles
-
-
-def parse_math(url, feed):
-    soup = parse_html(url)
-    if soup == None:
-        return []
-    articles = []
-    title, date, link = '', '', ''
-    for item in(soup.find_all('a', attrs={'class': 'categuide'})):
-        title = item['title']
-        link = url + item['href']
-        date = parse_date(item.parent.parent.find_all('td')[2].text.strip())
-        articles.append(
-            Article(title, feed, date, link))
-    return articles
-
 
 def parse_cse(url, feed):
     soup = parse_html(url)
@@ -91,17 +83,25 @@ def parse_cse(url, feed):
 
 
 def parse_date(text):
-    if('[' in text):
-        datetime_object = datetime.strptime(text, '[%m-%d]')
-        year = datetime.today().year if datetime.today(
-        ).month >= datetime_object.month else datetime.today().year - 1
-        datetime_object = datetime_object.replace(year=year)
-    elif (']' in text):
-        return parse_date('[' + text)
-    elif ('201' in text):
-        datetime_object = datetime.strptime(text, '%Y-%m-%d')
+    if not('201' in text):
+        if('[' in text):
+            datetime_object = datetime.strptime(text, '[%m-%d]')
+            year = datetime.today().year if datetime.today(
+            ).month >= datetime_object.month else datetime.today().year - 1
+            datetime_object = datetime_object.replace(year=year)
+        elif (']' in text):
+            return parse_date('[' + text)
+        else:
+            datetime_object = datetime.strptime(text, '%m-%d')
+            year = datetime.today().year if datetime.today(
+            ).month >= datetime_object.month else datetime.today().year - 1
+            datetime_object = datetime_object.replace(year=year)
+    else:
+        if not('[' in text):
+            datetime_object = datetime.strptime(text, '%Y-%m-%d')
+        else:
+            datetime_object = datetime.strptime(text, '[%Y-%m-%d]')
     return datetime_object.strftime("%Y-%m-%d")
-
 
 def render_article(article, feed):
     text = """
