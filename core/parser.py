@@ -43,7 +43,7 @@ def parse_college(url, feed):
             except:
                 continue
             articles.append(
-                Article(title, feed, date, url + true_url))
+                Article(title, feed, date, true_url))
     return articles
 
 
